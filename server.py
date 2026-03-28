@@ -6,6 +6,12 @@ PORT = 5555
 
 clients = {}  # socket -> username
 
+valid = 'valid username'
+utf8_string_valid = valid.encode('utf-8')
+
+duplicate = 'duplicate username'
+utf8_string_duplicate = duplicate.encode('utf-8')
+
 def broadcast(message, sender_socket=None):
     """Send a message to all clients, optionally skipping the sender."""
     for client_socket in list(clients):
@@ -23,6 +29,14 @@ def handle_client(client_socket, address):
     except:
         client_socket.close()
         return
+    
+    user_name_status = username in clients.values()
+    while(user_name_status):
+        client_socket.send(utf8_string_duplicate)
+        username = client_socket.recv(1024).decode('utf-8').strip()
+        user_name_status = username in clients.values()
+
+    client_socket.send(utf8_string_valid)
 
     clients[client_socket] = username
     print(f"[+] {username} connected from {address}")

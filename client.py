@@ -18,8 +18,17 @@ def start_client():
     client.connect((HOST, PORT))
 
     # Ask for username before anything else
-    username = input("Enter your username: ").strip()
-    client.send(username.encode('utf-8'))
+    valid_username = False
+
+    while(valid_username != True):
+        username = input("Enter your username: ").strip()
+        client.send(username.encode('utf-8'))
+
+        message = client.recv(1024).decode('utf-8')
+        print(message)
+
+        if(message == 'valid username'):
+            valid_username = True
 
     # Now start listening for incoming messages in the background
     thread = threading.Thread(target=receive_messages, args=(client,))
